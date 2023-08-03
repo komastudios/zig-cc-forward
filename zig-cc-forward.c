@@ -103,17 +103,29 @@ int main(int argc, char *argv[]) {
     }
 
 #if !defined(_WIN32)
-    char *zig_args[CMD_MAX_ARGS];
-    zig_args[0] = zigCmd;
-    for (int i = 1; i < argc; ++i) {
-        zig_args[i] = argv[i];
-    }
-    zig_args[argc] = NULL;
-    
-    if (execvp("zig", zig_args) != 0) {
-        perror("failed to execute command");
+    char* argBuf0 = strdup(zigExe);
+    char* argBuf1 = strdup(zigCmd);
+
+    if (!argBuf0 || !argBuf1) {
+        fprintf(stderr, "Out of memory\n");
         return EXIT_FAILURE;
     }
+    
+    char* zig_args[CMD_MAX_ARGS];
+    zig_args[0] = argBuf0;
+    zig_args[1] = argBuf1;
+    for (int i = 1; i < argc; ++i) {
+        zig_args[i+1] = argv[i];
+    }
+    zig_args[argc+1] = NULL;
+    
+    if (execvp(zigExe, zig_args) != 0) {
+        perror("failed to execute command");
+        err = EXIT_FAILURE;
+    }
+
+    free(argBuf1);
+    free(argBuf0);
 #else
     WCHAR zigExeW[MAX_PATH];
     WCHAR zigExeFullPath[MAX_PATH];
