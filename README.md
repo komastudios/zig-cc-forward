@@ -2,8 +2,10 @@
 
 ## Compile
 
-**Windows**:
 ```
+zig build --prefix .install/win64 -Doptimize=ReleaseFast
+
+# win64
 zig build --prefix .install/win64 -Dtarget=x86_64-windows-gnu -Doptimize=ReleaseFast
 ```
 
