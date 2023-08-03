@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define CMD_MAX_LEN (64 * 1024)
 #define CMD_MAX_ARGS 4096
