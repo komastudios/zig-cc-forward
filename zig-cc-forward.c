@@ -23,6 +23,44 @@ static const char* zigValidCmds[] = {
     NULL
 };
 
+static int strncmp_tolower(const char *a, const char *b, size_t n) {
+    if (a && b) {
+        for (size_t i = 0; i < n && a[i] && b[i]; ++i) {
+            char lower_a = tolower(a[i]);
+            char lower_b = tolower(b[i]);
+
+            if (lower_a != lower_b) {
+                return lower_a - lower_b;
+            }
+        }
+    }
+    else if (!a && b) {
+        return -1;
+    }
+    else if (a && !b) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+
+    if (n > 0) {
+        if (a[n - 1] == '\0' && b[n - 1] == '\0') {
+            return 0;
+        }
+
+        if (a[n - 1] == '\0') {
+            return -1;
+        }
+
+        if (b[n - 1] == '\0') {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
     int err = EXIT_SUCCESS;
     
@@ -46,13 +84,13 @@ int main(int argc, char *argv[]) {
         }
         if (idxDash && idxDash >= arg0+3) {
             const char* s = idxDash - 3;
-            if (tolower(s[0]) == 'z' && tolower(s[1]) == 'i' && tolower(s[2]) == 'g') {
+            if (strncmp_tolower(s, "zig", 3) == 0) {
                 // fprintf(stderr, "zig-cc: matched 'zig-' binary prefix\n");
                 const char** cmdIter = zigValidCmds;
                 while (*cmdIter) {
                     const char* cmd = *cmdIter++;
                     int cmdLen = strlen(cmd);
-                    if (idxDash+1+cmdLen == idxEnd && strnicmp(idxDash+1, cmd, cmdLen) == 0) {
+                    if (idxDash+1+cmdLen == idxEnd && strncmp_tolower(idxDash+1, cmd, cmdLen) == 0) {
                         // fprintf(stderr, "zig-cc: matched zig command suffix: %s\n", cmd);
                         zigCmd = cmd;
                         break;
@@ -129,7 +167,7 @@ int main(int argc, char *argv[]) {
 
     // wprintf(L"CMD: %ls\n", szCommandLine);
     // wprintf(L"ARGS: %ls\n", szCommandArgs);
-    wprintf(L"CALL: %ls\n", commandLine);
+    // wprintf(L"CALL: %ls\n", commandLine);
 
     // LPWSTR* szArglist;
     // int nArgs;
